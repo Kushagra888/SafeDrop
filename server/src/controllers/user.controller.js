@@ -13,10 +13,7 @@ import sequelize from "../config/database.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const JWT_SECRET_PATH = path.join(__dirname, '../jwt_secret.txt');
-const JWT_SECRET = fs.existsSync(JWT_SECRET_PATH) 
-  ? fs.readFileSync(JWT_SECRET_PATH, 'utf8').trim() 
-  : 'default_jwt_secret_for_development';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const generateUniqueId = () => {
   return uuidv4();
@@ -83,7 +80,8 @@ const registerUser = async (req, res) => {
       }
     });
   } catch (error) {
-    return res.status(500).json({ error: 'registration failed' });
+    console.error('Registration error:', error);
+    return res.status(500).json({ error: 'registration failed: ' + error.message });
   }
 };
 
