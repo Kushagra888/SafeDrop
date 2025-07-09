@@ -183,12 +183,19 @@ const downloadFile = async (req, res) => {
       console.log('Password verified successfully');
     }
 
-    // Get the absolute file path
+    // Get the file name from the path
     const fileName = path.basename(file.path);
-    const absolutePath = path.join(__dirname, '../../uploads', fileName);
+    
+    // Define uploads directory - handle both development and production environments
+    const uploadsDir = process.env.NODE_ENV === 'production' 
+      ? path.join(process.cwd(), 'uploads') 
+      : path.join(__dirname, '../../uploads');
+      
+    const absolutePath = path.join(uploadsDir, fileName);
 
     console.log('File path:', {
       fileName,
+      uploadsDir,
       absolutePath,
       exists: fs.existsSync(absolutePath)
     });

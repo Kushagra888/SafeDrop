@@ -7,11 +7,16 @@ import { dirname } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Define uploads directory
-const uploadsDir = path.join(__dirname, '../../uploads');
+// Define uploads directory - handle both development and production environments
+const uploadsDir = process.env.NODE_ENV === 'production' 
+  ? path.join(process.cwd(), 'uploads') 
+  : path.join(__dirname, '../../uploads');
+
+console.log('Using uploads directory:', uploadsDir);
 
 // Ensure uploads directory exists
 if (!fs.existsSync(uploadsDir)) {
+  console.log('Creating uploads directory:', uploadsDir);
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
@@ -27,6 +32,8 @@ export const saveFile = async (fileBuffer, fileName) => {
     const safeName = fileName.replace(/[^a-zA-Z0-9.-]/g, '_');
     const filePath = path.join(uploadsDir, safeName);
     
+    console.log('Saving file to:', filePath);
+    
     // Write file to disk
     await fs.promises.writeFile(filePath, fileBuffer);
     
@@ -34,7 +41,7 @@ export const saveFile = async (fileBuffer, fileName) => {
     return `/uploads/${safeName}`;
   } catch (error) {
     console.error('Error saving file:', error);
-    throw new Error('File upload failed');
+    throw new Error(`File upload failed: ${error.message}`);
   }
 };
 
@@ -48,6 +55,8 @@ export const getFile = async (filePath) => {
     // Convert relative path to absolute path
     const fileName = path.basename(filePath);
     const absolutePath = path.join(uploadsDir, fileName);
+    
+    console.log('Reading file from:', absolutePath);
     
     // Read file from disk
     return await fs.promises.readFile(absolutePath);
@@ -67,6 +76,8 @@ export const deleteFile = async (filePath) => {
     // Convert relative path to absolute path
     const fileName = path.basename(filePath);
     const absolutePath = path.join(uploadsDir, fileName);
+    
+    console.log('Deleting file:', absolutePath);
     
     // Check if file exists
     if (fs.existsSync(absolutePath)) {
