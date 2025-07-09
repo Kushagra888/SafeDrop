@@ -66,7 +66,7 @@ const registerUser = async (req, res) => {
         email: newUser.email 
       },
       JWT_SECRET,
-      { expiresIn: '30d' }
+      { expiresIn: process.env.JWT_EXPIRY || '7d' }
     );
 
     return res.status(201).json({
@@ -110,7 +110,7 @@ const loginUser = async (req, res) => {
     const token = jwt.sign(
       { userId: user.id }, 
       JWT_SECRET,
-      { expiresIn: '30d' }
+      { expiresIn: process.env.JWT_EXPIRY || '7d' }
     );
     
     await User.update(
