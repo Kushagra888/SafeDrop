@@ -8,7 +8,7 @@ import { resetAuthError } from '../redux/slice/auth/authSlice';
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, isAuthenticated, error } = useSelector((state) => state.auth);
+  const { loading, isAuthenticated, error, user } = useSelector((state) => state.auth);
 
   const [formData, setFormData] = useState({
     email: '',
@@ -16,11 +16,12 @@ const Login = () => {
   });
 
   useEffect(() => {
+    console.log('Auth state:', { isAuthenticated, user });
     if (isAuthenticated) {
       toast.success('Login successful!');
       navigate('/dashboard');
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, user]);
 
   const handleChange = (e) => {
     setFormData({
@@ -37,9 +38,13 @@ const Login = () => {
       return;
     }
 
+    console.log('Attempting login with:', { email: formData.email });
+
     try {
-      await dispatch(loginUser(formData)).unwrap();
+      const result = await dispatch(loginUser(formData)).unwrap();
+      console.log('Login success:', result);
     } catch (err) {
+      console.error('Login error:', err);
       const errorMessage = err?.error || err?.message || 'Login failed. Please check your credentials.';
       toast.error(errorMessage);
       dispatch(resetAuthError());
@@ -95,8 +100,6 @@ const Login = () => {
               />
             </div>
           </div>
-
-         
 
           <div>
             <button

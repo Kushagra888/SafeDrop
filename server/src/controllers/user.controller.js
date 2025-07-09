@@ -89,7 +89,10 @@ const loginUser = async (req, res) => {
   const { email, password } = req.body;
   
   try {
+    console.log('Login attempt:', { email });
+    
     if (!email || !password) {
+      console.log('Missing email or password');
       return res.status(400).json({ error: 'email and password are required' });
     }
 
@@ -98,26 +101,33 @@ const loginUser = async (req, res) => {
     });
     
     if (!user) {
+      console.log('User not found:', email);
       return res.status(401).json({ error: 'invalid credentials' });
     }
     
+    console.log('User found, verifying password');
     const isMatch = await bcrypt.compare(password, user.password);
     
     if (!isMatch) {
+      console.log('Password mismatch for user:', email);
       return res.status(401).json({ error: 'invalid credentials' });
     }
 
+    console.log('Password verified, generating token');
     const token = jwt.sign(
       { userId: user.id }, 
       JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRY || '7d' }
     );
     
+    console.log('JWT token generated with expiry:', process.env.JWT_EXPIRY || '7d');
+    
     await User.update(
       { lastLogin: new Date() },
       { where: { id: user.id } }
     );
     
+    console.log('Login successful for user:', email);
     return res.status(200).json({
       message: 'login successful',
       token,
@@ -135,7 +145,8 @@ const loginUser = async (req, res) => {
       }
     });
   } catch (error) {
-    return res.status(500).json({ error: 'login failed' });
+    console.error('Login error:', error);
+    return res.status(500).json({ error: 'login failed: ' + error.message });
   }
 };
 
