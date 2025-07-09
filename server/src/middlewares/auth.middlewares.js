@@ -1,36 +1,32 @@
 import jwt from "jsonwebtoken";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
 import { User } from "../models/user.models.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const JWT_SECRET_PATH = path.join(__dirname, "../jwt_secret.txt");
-const JWT_SECRET = fs.existsSync(JWT_SECRET_PATH)
-  ? fs.readFileSync(JWT_SECRET_PATH, "utf8").trim()
-  : "default_jwt_secret_for_development";
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const authenticateUser = async (req, res, next) => {
   let token = req.headers.authorization;
 
   if (!token || !token.startsWith("Bearer ")) {
+    console.log("No token or invalid token format");
     return res.status(401).json({ error: "unauthorized access" });
   }
   
   token = token.split(" ")[1];
   
   try {
+    console.log("Verifying token with JWT_SECRET length:", JWT_SECRET.length);
     const decoded = jwt.verify(token, JWT_SECRET);
+    console.log("Token decoded successfully:", { userId: decoded.userId, email: decoded.email });
     
     // Verify user exists in database
     const user = await User.findByPk(decoded.userId);
     
     if (!user) {
+      console.log("User not found in database for userId:", decoded.userId);
       return res.status(401).json({ error: "user not found" });
     }
     
+    console.log("User found in database:", user.id);
     req.user = {
       userId: decoded.userId,
       email: decoded.email
