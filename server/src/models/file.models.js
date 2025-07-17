@@ -60,7 +60,6 @@ const File = sequelize.define('File', {
   },
   shortCode: {
     type: DataTypes.STRING,
-    unique: true
   }
 }, {
   timestamps: true

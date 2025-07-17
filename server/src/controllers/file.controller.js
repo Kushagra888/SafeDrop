@@ -43,7 +43,13 @@ const uploadFiles = async (req, res) => {
       const uniqueSuffix = shortid.generate();
       
       const finalFileName = `${originalName.replace(/\s+/g, '_')}_${uniqueSuffix}${extension}`;
-      const shortCode = shortid.generate();
+      
+      let shortCode;
+      let existingFile;
+      do {
+        shortCode = shortid.generate();
+        existingFile = await File.findOne({ where: { shortCode } });
+      } while (existingFile); // Keep generating until we find a unique one
 
       console.log('Processing file:', {
         originalName,

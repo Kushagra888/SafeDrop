@@ -23,7 +23,8 @@ export const initDatabase = async () => {
     
     // Sync all models with database
     console.log('🔄 Synchronizing models with database...');
-    await sequelize.sync({ alter: true });
+    
+    await sequelize.sync({ force: false, alter: false });
     console.log('✅ Database tables synchronized successfully.');
     
     return true;
@@ -33,4 +34,4 @@ export const initDatabase = async () => {
   }
 };
 
-export default sequelize; 
+export default sequelize;
