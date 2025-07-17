@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { deleteUser, updateUser } from "../../redux/slice/auth/authThunk";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { getValidProfileImageUrl } from "../../utils/profileImageHelper";
 
 const UserProfile = () => {
   const { user } = useSelector((state) => state.auth);
@@ -109,9 +110,15 @@ const UserProfile = () => {
       <h2 className="text-3xl font-bold text-gray-800 mb-6">User Profile</h2>
 
       <div className="flex items-center gap-6">
-        <div className="w-28 h-28 rounded-full bg-blue-500 flex items-center justify-center text-white text-3xl font-bold">
-          {user.fullname ? user.fullname.charAt(0).toUpperCase() : "U"}
-        </div>
+        <img 
+          src={getValidProfileImageUrl(user, 112)} 
+          alt="Profile" 
+          className="w-28 h-28 rounded-full border-2 border-blue-500 object-cover" 
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = getValidProfileImageUrl({ fullname: user?.fullname }, 112);
+          }}
+        />
         <div className="flex-1 space-y-1">
           <h3 className="text-xl font-semibold text-gray-900">{user.fullname || "No name set"}</h3>
           <p className="text-gray-600">@{user.username || "username"}</p>

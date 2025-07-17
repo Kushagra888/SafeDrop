@@ -1,6 +1,7 @@
 // src/features/auth/authSlice.js
 import { createSlice } from '@reduxjs/toolkit';
 import { registerUser, loginUser, logoutUser, updateUser, deleteUser, getUser } from './authThunk';
+import { isDeprecatedAvatarUrl, getValidProfileImageUrl } from '../../../utils/profileImageHelper';
 
 const initialState = {
   user: JSON.parse(localStorage.getItem('user')) || null,
@@ -33,11 +34,18 @@ const authSlice = createSlice({
       .addCase(registerUser.fulfilled, (state, action) => {
         state.loading = false;
         state.isAuthenticated = true;
-        state.user = action.payload.user;
+        
+        // Fix deprecated profile image URLs
+        const user = action.payload.user;
+        if (user && isDeprecatedAvatarUrl(user.profilePic)) {
+          user.profilePic = getValidProfileImageUrl(user);
+        }
+        
+        state.user = user;
         state.token = action.payload.token;
         
         localStorage.setItem('token', action.payload.token);
-        localStorage.setItem('user', JSON.stringify(action.payload.user));
+        localStorage.setItem('user', JSON.stringify(user));
       })
       
       .addCase(registerUser.rejected, (state, action) => {
@@ -53,11 +61,18 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
         state.isAuthenticated = true;
-        state.user = action.payload.user;
+        
+        // Fix deprecated profile image URLs
+        const user = action.payload.user;
+        if (user && isDeprecatedAvatarUrl(user.profilePic)) {
+          user.profilePic = getValidProfileImageUrl(user);
+        }
+        
+        state.user = user;
         state.token = action.payload.token;
         
         localStorage.setItem('token', action.payload.token);
-        localStorage.setItem('user', JSON.stringify(action.payload.user));
+        localStorage.setItem('user', JSON.stringify(user));
       })
       
       .addCase(loginUser.rejected, (state, action) => {
@@ -118,8 +133,18 @@ const authSlice = createSlice({
             state.loading=false;
             console.log(action.payload);
             
-            state.user=action.payload;
-            // localStorage.setItem('user',JSON.stringify(action.payload));
+            // Fix deprecated profile image URLs
+            const user = action.payload;
+            if (user && isDeprecatedAvatarUrl(user.profilePic)) {
+              user.profilePic = getValidProfileImageUrl(user);
+            }
+            
+            state.user=user;
+            
+            // Update localStorage with fixed profile image
+            if (user) {
+              localStorage.setItem('user', JSON.stringify(user));
+            }
         })
         .addCase(getUser.rejected,(state,action)=>{
             state.loading=false;

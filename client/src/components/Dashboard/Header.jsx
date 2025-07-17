@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import Logout from "./Logout";
+import { getValidProfileImageUrl } from "../../utils/profileImageHelper";
 
 const Header = ({ sidebarOpen, setSidebarOpen, setActiveTab }) => {
   const { user } = useSelector((state) => state.auth);
@@ -60,9 +61,13 @@ const Header = ({ sidebarOpen, setSidebarOpen, setActiveTab }) => {
             >
               <span className="text-gray-700 font-medium hidden md:block">{user?.fullname}</span>
               <img 
-                src={user?.profilePic} 
+                src={getValidProfileImageUrl(user, 36)} 
                 alt="Avatar" 
                 className="w-9 h-9 rounded-full border-2 border-blue-500" 
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = getValidProfileImageUrl({ fullname: user?.fullname }, 36);
+                }}
               />
             </div>
             

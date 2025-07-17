@@ -49,7 +49,7 @@ const User = sequelize.define('User', {
   },
   profilePic: {
     type: DataTypes.STRING,
-    defaultValue: 'https://avatar.iran.liara.run/public/1'
+    defaultValue: 'https://ui-avatars.com/api/?name=User&background=0D8ABC&color=fff'
   },
   lastLogin: {
     type: DataTypes.DATE,
