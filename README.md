@@ -2,6 +2,8 @@
 
 SafeDrop is a secure file sharing web application built with React.js and Node.js that enables users to upload, share, and manage files with advanced security features and real-time file tracking.
 
+👉 [Click to watch demo video](https://drive.google.com/file/d/1Kl7j9m4vgL4PrADAZv96VflKsa6qx3Sp/view?usp=sharing)
+
 ## Key Features
 
 - **User Authentication**
